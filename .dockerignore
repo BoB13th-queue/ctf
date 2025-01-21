@@ -1,0 +1,8 @@
+.git/
+.gitignore
+
+.docerignore
+
+*/__pycache__
+
+readme.md
