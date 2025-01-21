@@ -51,36 +51,46 @@ python fastapi_app.py
 ## Structure
 ```sh
 CTF Projet
+├── readme.md
+├── main.py
+├── dockerfile
+├── ctf.db
+├── requirements.txt
 ├── core
-│   └── oauthConfig.py
-├── crud
-│   ├── Auth.py
-│   ├── Menu.py
-│   ├── Order.py
-│   ├── Users.py
-│   └── __pycache__
-│       └── Auth.cpython-312.pyc
+│   └── config.py
 ├── database
-│   ├── __pycache__
-│   │   ├── database.cpython-312.pyc
-│   │   └── models.cpython-312.pyc
 │   ├── database.py
 │   └── models.py
-├── main.py
-├── readme.md
-├── routes
-│   ├── Auth.py
-│   ├── Menu.py
-│   ├── Order.py
-│   ├── Users.py
-│   └── __init__.py
-├── schema
-│   ├── Auth.py
-│   ├── Menu.py
-│   ├── Normally.py
-│   ├── Order.py
-│   └── User.py
+├── service
+│   ├── __init__.py
+│   ├── auth
+│   │   ├── crud.py
+│   │   ├── route.py
+│   │   └── schema.py
+│   ├── note
+│   │   ├── crud.py
+│   │   ├── route.py
+│   │   └── schema.py
+│   └── user
+│       ├── crud.py
+│       ├── route.py
+│       └── schema.py
+├── tests
 └── utils
     ├── oauth.py
     └── passHash.py
 ```
+
+`readme.md`: It contains information about the project and how to implement it.
+`main.py`: This is the file to run the project.
+`dockerfile`: This is a file for running the project in a Docker environment.
+`ctf.db`: This is the file where information related to the project is stored.
+`requirements.txt`: A file for managing the project's dependencies.
+`core`: There are files related to project settings.
+`database`: There are files related to the settings of the database.
+`service`: There are documents related to the service API.
+    - `crud`: These are documents related to database operations.
+    - `schema`: Defines the input and output format of the API.
+    - `route`: There are endpoints and implementations of the API.
+`tests`: These are the files for testing.
+`utils`:  There are other things that are required to implement the project.
