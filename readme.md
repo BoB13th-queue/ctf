@@ -52,10 +52,11 @@ python fastapi_app.py
 ```sh
 CTF Projet
 ├── readme.md
-├── main.py
-├── dockerfile
-├── ctf.db
 ├── requirements.txt
+├── dockerfile
+├── docker-compose.yml
+├── main.py
+├── ctf.db
 ├── core
 │   └── config.py
 ├── database
@@ -64,33 +65,34 @@ CTF Projet
 ├── service
 │   ├── __init__.py
 │   ├── auth
-│   │   ├── crud.py
-│   │   ├── route.py
-│   │   └── schema.py
+│   │   ├── auth_crud.py
+│   │   ├── auth_route.py
+│   │   └── auth_schema.py
 │   ├── note
-│   │   ├── crud.py
-│   │   ├── route.py
-│   │   └── schema.py
+│   │   ├── note_crud.py
+│   │   ├── note_route.py
+│   │   └── note_schema.py
 │   └── user
-│       ├── crud.py
-│       ├── route.py
-│       └── schema.py
+│       ├── user_crud.py
+│       ├── user_route.py
+│       └── user_schema.py
 ├── tests
 └── utils
     ├── oauth.py
     └── passHash.py
+
 ```
 
 - `readme.md`: It contains information about the project and how to implement it.
-- `main.py`: This is the file to run the project.
-- `dockerfile`: This is a file for running the project in a Docker environment.
-- `ctf.db`: This is the file where information related to the project is stored.
 - `requirements.txt`: A file for managing the project's dependencies.
+- `dockerfile`: This is a file for running the project in a Docker environment.
+- `docker-compose.yml`: This file exists for execution via docker compose.
+- `main.py`: This is the file to run the project.
+- `ctf.db`: This is the file where information related to the project is stored.
 - `core`: There are files related to project settings.
 - `database`: There are files related to the settings of the database.
 - `service`: There are documents related to the service API.
-    - `crud`: These are documents related to database operations.
-    - `schema`: Defines the input and output format of the API.
-    - `route`: There are endpoints and implementations of the API.
-- `tests`: These are the files for testing.
+    - `*_crud.py`: These are documents related to database operations.
+    - `*_schema.py`: Defines the input and output format of the API.
+    - `*_route.py`: There are endpoints and implementations of the API.
 - `utils`:  There are other things that are required to implement the project.
