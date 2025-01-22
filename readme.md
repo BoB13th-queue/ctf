@@ -12,7 +12,7 @@ docker compose up -d
 If only docker is installed
 ```sh
 docker build -t ctf_back .
-docker run -p 8000:8000 ctf_back
+docker run --env-file .env -p 8000:8000 ctf_back
 ```
 
 ## requirements
@@ -76,7 +76,6 @@ CTF Projet
 │       ├── user_crud.py
 │       ├── user_route.py
 │       └── user_schema.py
-├── tests
 └── utils
     ├── oauth.py
     └── passHash.py
@@ -96,3 +95,20 @@ CTF Projet
     - `*_schema.py`: Defines the input and output format of the API.
     - `*_route.py`: There are endpoints and implementations of the API.
 - `utils`:  There are other things that are required to implement the project.
+
+
+<details>
+<summary>풀이</summary>
+
+![hint](./img/hint.png)
+
+![flag_1](./img/flag_1.png)
+
+![flag_2](./img/flag_2.png)
+
+![flag_3](./img/flag_3.png)
+
+**정답**
+- flag{iYXrfKpgER_O0xueGD6aT_9bzw6lckgn}
+
+</details>

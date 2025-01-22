@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes App (with Admin User Management)</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    .note-card {
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .note-card:hover {
+      transform: translateY(-5px);
+    }
+    .auth-container {
+      max-width: 400px;
+      margin: 50px auto;
+    }
+    .note-card img {
+        max-width: 100%;    /* 카드 폭을 넘지 않도록 */
+        height: auto;       /* 이미지 비율에 맞게 높이 자동 조절 */
+        display: block;     /* inline 요소 공백 제거용 (필요 시) */
+        object-fit: cover;  /* cover, contain, fill 등 원하는 방식 적용 */
+    }
+    [data-page] {
+      display: none;
+    }
+    [data-page].active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Notes App</a>
+      <div class="navbar-nav">
+        <a class="nav-link" data-page="login" href="#">Login</a>
+        <a class="nav-link" data-page="register" href="#">Register</a>
+        <a class="nav-link" data-page="notes" id="notesLink" href="#">My Notes</a>
+        <a class="nav-link" data-page="adminUsers" id="adminUsersLink" href="#">User Management</a>
+        <button class="btn btn-danger ms-3" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Auth Pages -->
+  <div data-page="login" class="auth-container">
+    <div class="card p-4">
+      <h2 class="mb-4">Login</h2>
+      <form id="loginForm">
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Username"
+            required
+            name="username"
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            required
+            name="password"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <div data-page="register" class="auth-container">
+    <div class="card p-4">
+      <h2 class="mb-4">Register</h2>
+      <form id="registerForm">
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Username"
+            required
+            name="username"
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            required
+            name="password"
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Full Name"
+            required
+            name="full_name"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notes Page -->
+  <div data-page="notes" class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2>My Notes</h2>
+        <button class="btn btn-success" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal">
+        New Note
+        </button>
+    </div>
+    <div id="notesContainer" class="row g-4"></div>
+  </div>
+
+  <!-- (읽기 전용) Note View Modal -->
+  <div class="modal fade" id="noteViewModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewNoteTitle">Note</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <!-- 읽기 전용으로 노트의 본문을 HTML/Text로 렌더링할 영역 -->
+          <div id="viewNoteContent"></div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <!-- Edit 버튼을 누르면 기존 편집 모달로 전환 (editNote 함수 이용) -->
+          <button
+            type="button"
+            class="btn btn-warning"
+            id="viewNoteEditBtn"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- (편집/작성) Note Modal -->
+  <div class="modal fade" id="noteModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="noteForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Note</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="noteId" />
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Title"
+                required
+                id="noteTitle"
+              />
+            </div>
+            <div class="mb-3">
+              <textarea
+                class="form-control"
+                placeholder="Content"
+                required
+                id="noteContent"
+                rows="5"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- (Admin Only) User Management Page -->
+  <div data-page="adminUsers" class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+      <h2>User Management</h2>
+      <button
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#userModal"
+      >
+        New User
+      </button>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div class="modal fade" id="userModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="userForm">
+          <div class="modal-header">
+            <h5 class="modal-title">User Info</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="userId" />
+            <div class="mb-3">
+              <label>Username</label>
+              <input type="text" class="form-control" required id="userName" />
+            </div>
+            <div class="mb-3">
+              <label>Full Name</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                id="userFullName"
+              />
+            </div>
+            <div class="mb-3">
+              <label>Role</label>
+              <select class="form-select" id="userRole">
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+  ></script>
+  <script>
+    const API_BASE = 'http://localhost:8000';
+    let currentPage = 'login';
+
+    // -------------------------
+    //  공통: 페이지 전환/권한 설정
+    // -------------------------
+    function showPage(page) {
+      currentPage = page;
+      document.querySelectorAll('[data-page]').forEach(el => {
+        el.classList.toggle('active', el.dataset.page === page);
+      });
+    }
+
+    function setAuth(token, role) {
+      localStorage.setItem('token', token || '');
+      localStorage.setItem('role', role || '');
+      const isLoggedIn = !!token;
+      const isAdmin = role === 'admin';
+
+      // 로그인/비로그인에 따른 메뉴 표시
+      document.querySelector('[data-page="login"]').style.display = isLoggedIn ? 'none' : 'block';
+      // Register 버튼: 관리자거나 비로그인 시에만
+      document.querySelector('[data-page="register"]').style.display = (!isLoggedIn || isAdmin) ? 'block' : 'none';
+      // My Notes, Logout: 로그인 시에만
+      document.getElementById('notesLink').style.display = isLoggedIn ? 'block' : 'none';
+      document.getElementById('logoutBtn').style.display = isLoggedIn ? 'block' : 'none';
+      // User Management: 관리자만
+      document.getElementById('adminUsersLink').style.display = (isLoggedIn && isAdmin) ? 'block' : 'none';
+    }
+
+    async function fetchAPI(url, options = {}) {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers
+      };
+      const response = await fetch(`${API_BASE}${url}`, {
+        ...options,
+        headers
+      });
+      if (!response.ok) {
+        let errorMsg = 'Request failed';
+        try {
+          const error = await response.json();
+          errorMsg = error.detail || JSON.stringify(error);
+        } catch {}
+        throw new Error(errorMsg);
+      }
+      if (response.status === 204) return {};
+      return response.json();
+    }
+
+    // -------------------------
+    // Auth (로그인 / 회원가입)
+    // -------------------------
+    async function handleLogin(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            username: formData.get('username'),
+            password: formData.get('password'),
+            grant_type: 'password'
+          })
+        });
+        if (!response.ok) throw new Error('Login failed');
+        const { access_token, role } = await response.json();
+        setAuth(access_token, role);
+        showPage('notes');
+        loadNotes();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      try {
+        await fetchAPI('/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: formData.get('username'),
+            password: formData.get('password'),
+            full_name: formData.get('full_name')
+          })
+        });
+        alert('Registration successful! Please login.');
+        showPage('login');
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // -------------------------
+    // Notes 기능
+    // -------------------------
+    async function loadNotes() {
+      try {
+        const { notes } = await fetchAPI('/notes/');
+        const container = document.getElementById('notesContainer');
+
+        container.innerHTML = notes
+          .map(note => {
+            return `
+              <div class="col-md-4">
+                  <!-- 카드 클릭 시 '읽기 전용 모달' 오픈 -->
+                  <div class="card note-card" onclick="openNoteViewModal(${note.id})">
+                      <div class="card-body">
+                          <h5 class="card-title">${note.title}</h5>
+                          <p class="card-text">${note.content}</p>
+                          <!-- Edit/Delete 버튼은 카드 클릭 이벤트가 중복되지 않도록 stopPropagation -->
+                          <button class="btn btn-sm btn-warning"
+                                  onclick="event.stopPropagation(); editNote(${note.id});">
+                            Edit
+                          </button>
+                          <button class="btn btn-sm btn-danger"
+                                  onclick="event.stopPropagation(); deleteNote(${note.id});">
+                            Delete
+                          </button>
+                      </div>
+                  </div>
+              </div>
+            `;
+          })
+          .join('');
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // (A) 읽기 전용 모달: 카드를 클릭하면 노트 내용을 표시
+    window.openNoteViewModal = async function (id) {
+      try {
+        const note = await fetchAPI(`/notes/${id}`);
+        // 타이틀과 내용(HTML/Text)을 읽기 전용 모달에 채움
+        document.getElementById('viewNoteTitle').textContent = note.title;
+        // note.content를 그대로 넣되 HTML로 파싱해서 보여주고 싶다면 innerHTML 사용 (XSS 주의)
+        document.getElementById('viewNoteContent').innerText = note.content;
+        // Edit 버튼이 클릭되면 해당 노트를 편집 모달로 불러오도록 설정
+        document.getElementById('viewNoteEditBtn').onclick = () => {
+          // 읽기 모달 닫고
+          bootstrap.Modal.getInstance(document.getElementById('noteViewModal')).hide();
+          // 편집 모달 열기
+          editNote(id);
+        };
+
+        new bootstrap.Modal(document.getElementById('noteViewModal')).show();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    // (B) 편집하기(기존 로직 그대로)
+    window.editNote = async function (id) {
+      try {
+        const note = await fetchAPI(`/notes/${id}`);
+        document.getElementById('noteId').value = note.id;
+        document.getElementById('noteTitle').value = note.title;
+        document.getElementById('noteContent').value = note.content;
+        new bootstrap.Modal(document.getElementById('noteModal')).show();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    // (C) 삭제
+    window.deleteNote = async function (id) {
+      if (confirm('Are you sure you want to delete this note?')) {
+        try {
+          await fetchAPI(`/notes/${id}`, { method: 'DELETE' });
+          await loadNotes();
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+    };
+
+    // (D) 생성/수정 완료 시
+    async function saveNote(e) {
+      e.preventDefault();
+      try {
+        const note = {
+          title: document.getElementById('noteTitle').value,
+          content: document.getElementById('noteContent').value
+        };
+        const noteId = document.getElementById('noteId').value;
+        if (noteId) {
+          await fetchAPI(`/notes/${noteId}`, {
+            method: 'PUT',
+            body: JSON.stringify(note)
+          });
+        } else {
+          await fetchAPI('/notes/', {
+            method: 'POST',
+            body: JSON.stringify(note)
+          });
+        }
+        bootstrap.Modal.getInstance(document.getElementById('noteModal')).hide();
+        await loadNotes();
+        document.getElementById('noteForm').reset();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // -------------------------
+    // Admin User Management (발췌)
+    // -------------------------
+    async function loadUsers() {
+      try {
+        const { users } = await fetchAPI('/users/');
+        const tableBody = document.getElementById('usersTableBody');
+        tableBody.innerHTML = users
+          .map(u => {
+            return `
+              <tr>
+                <td>${u.username}</td>
+                <td>${u.full_name}</td>
+                <td>${u.role}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning" onclick="editUser(${u.id})">Edit</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Delete</button>
+                </td>
+              </tr>
+            `;
+          })
+          .join('');
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    window.editUser = async function (id) {
+      try {
+        const user = await fetchAPI(`/users/${id}`);
+        document.getElementById('userId').value = user.id;
+        document.getElementById('userName').value = user.username;
+        document.getElementById('userFullName').value = user.full_name;
+        document.getElementById('userRole').value = user.role;
+        new bootstrap.Modal(document.getElementById('userModal')).show();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    window.deleteUser = async function (id) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+      try {
+        await fetchAPI(`/users/${id}`, { method: 'DELETE' });
+        await loadUsers();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    document.getElementById('userForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      try {
+        const userId = document.getElementById('userId').value;
+        const userData = {
+          username: document.getElementById('userName').value,
+          full_name: document.getElementById('userFullName').value,
+          role: document.getElementById('userRole').value
+        };
+        if (userId) {
+          await fetchAPI(`/users/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(userData)
+          });
+        } else {
+          // 새 유저 생성 (회원가입 API 재활용)
+          await fetchAPI('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+              username: userData.username,
+              password: 'defaultPass',
+              full_name: userData.full_name
+            })
+          });
+          // 추가로 role 변경이 필요한 경우, 방금 생성한 유저ID를 찾아서 PUT으로 role 업데이트 가능
+        }
+        bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+        document.getElementById('userForm').reset();
+        loadUsers();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    // -------------------------
+    // 초기 이벤트/페이지 설정
+    // -------------------------
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      setAuth(null, null);
+      showPage('login');
+    });
+    document.getElementById('noteForm').addEventListener('submit', saveNote);
+    document.getElementById('newNoteBtn').addEventListener('click', () => {
+        // 폼/입력값 초기화
+        document.getElementById('noteId').value = '';
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteContent').value = '';
+    });
+
+    // 메뉴 링크 클릭 => 해당 페이지로 이동 후 필요 시 데이터 로딩
+    document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const page = link.getAttribute('data-page');
+        showPage(page);
+        if (page === 'notes') {
+          loadNotes();
+        } else if (page === 'adminUsers') {
+          loadUsers();
+        }
+      });
+    });
+
+    // 페이지 새로고침/최초 로딩 시
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedToken = localStorage.getItem('token') || '';
+      const savedRole = localStorage.getItem('role') || '';
+      if (savedToken) {
+        setAuth(savedToken, savedRole);
+        showPage('notes');
+        loadNotes();
+      } else {
+        setAuth(null, null);
+        showPage('login');
+      }
+    });
+  </script>
+</body>
+</html>
