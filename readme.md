@@ -81,16 +81,16 @@ CTF Projet
     └── passHash.py
 ```
 
-`readme.md`: It contains information about the project and how to implement it.
-`main.py`: This is the file to run the project.
-`dockerfile`: This is a file for running the project in a Docker environment.
-`ctf.db`: This is the file where information related to the project is stored.
-`requirements.txt`: A file for managing the project's dependencies.
-`core`: There are files related to project settings.
-`database`: There are files related to the settings of the database.
-`service`: There are documents related to the service API.
+- `readme.md`: It contains information about the project and how to implement it.
+- `main.py`: This is the file to run the project.
+- `dockerfile`: This is a file for running the project in a Docker environment.
+- `ctf.db`: This is the file where information related to the project is stored.
+- `requirements.txt`: A file for managing the project's dependencies.
+- `core`: There are files related to project settings.
+- `database`: There are files related to the settings of the database.
+- `service`: There are documents related to the service API.
     - `crud`: These are documents related to database operations.
     - `schema`: Defines the input and output format of the API.
     - `route`: There are endpoints and implementations of the API.
-`tests`: These are the files for testing.
-`utils`:  There are other things that are required to implement the project.
+- `tests`: These are the files for testing.
+- `utils`:  There are other things that are required to implement the project.
