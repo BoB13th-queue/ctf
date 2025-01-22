@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: . 
+      dockerfile: dockerfile 
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - HOST=${HOST}
+      - PORT=${PORT}
+      - WORKERS=${WORKERS}
+
+networks:
+  app-network:
+    driver: bridge

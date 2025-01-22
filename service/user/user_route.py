@@ -4,8 +4,8 @@ from starlette import status
 
 from database.database import get_db
 from database.models import Users
-from service.user import schema as user_schema
-from service.user import crud as user_crud 
+from service.user import user_schema
+from service.user import user_crud 
 from utils.oauth import get_current_user
 
 router = APIRouter(

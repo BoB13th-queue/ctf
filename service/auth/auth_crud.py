@@ -7,9 +7,9 @@ from starlette import status
 
 from database.models import Users
 from core.config import auth_config
-from service.user import crud as user_crud
-from service.user import schema as user_schema
-from service.auth import schema as auth_schema
+from service.user import user_crud
+from service.user import user_schema
+from service.auth import auth_schema
 from utils.passHash import hash_password, check_password
 
 

@@ -7,10 +7,10 @@ from starlette import status
 
 from database.models import Note
 from core.config import auth_config
-from service.user import crud as user_crud
-from service.user import schema as user_schema
-from service.auth import schema as auth_schema
-from service.note import schema as note_schema
+from service.user import user_crud
+from service.user import user_schema
+from service.auth import auth_schema
+from service.note import note_schema
 
 def add_note(db: Session, title: str, content: str, user_id: int) -> dict:
     new_note = Note(

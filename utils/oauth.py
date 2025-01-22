@@ -5,7 +5,7 @@ from starlette import status
 
 from database.database import get_db
 from core.config import auth_config
-from service.user import crud
+from service.user import user_crud
 
 def get_current_user(token: str = Depends(auth_config.oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
@@ -22,7 +22,7 @@ def get_current_user(token: str = Depends(auth_config.oauth2_scheme), db: Sessio
     except JWTError:
         raise credentials_exception
     else:
-        user = crud.get_user_by_username(db, username=username)
+        user = user_crud.get_user_by_username(db, username=username)
         if user is None:
             raise credentials_exception
 

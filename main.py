@@ -8,7 +8,7 @@ from service import routers
 from database import models
 from database.database import engine
 from core.config import server_config
-from service.user import crud as user_crud
+from service.user import user_crud
 
 
 @asynccontextmanager

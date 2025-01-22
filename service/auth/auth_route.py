@@ -1,12 +1,12 @@
-from service.user import crud
+from service.user import user_crud
 from fastapi import APIRouter
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from database.database import get_db
-from service.auth import crud as auth_crud
-from service.auth import schema as auth_schema
+from service.auth import auth_crud
+from service.auth import auth_schema
 
 router = APIRouter(
     prefix="/auth",

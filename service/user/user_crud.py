@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from database.models import Users
-from service.user import schema
+from service.user import user_schema
 
 def get_user_by_username(db: Session, username: str):
     return db.query(Users).filter(Users.username == username).first()

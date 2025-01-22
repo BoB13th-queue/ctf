@@ -5,9 +5,9 @@ from starlette import status
 
 from database.database import get_db
 from database.models import Users
-from service.user import crud as user_crud
-from service.note import schema as note_schema
-from service.note import crud as note_crud
+from service.user import user_crud
+from service.note import note_crud
+from service.note import note_schema
 from utils.oauth import get_current_user
 
 
