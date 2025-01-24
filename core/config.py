@@ -13,8 +13,8 @@ class AuthConfig:
 class ServerConfig:
     host: str = os.getenv("HOST")
     port: int = int(os.getenv("PORT"))
-    # workers: int = int(os.getenv("WORKERS", 4))
-    reload: bool = True # False in production This is for development only
+    workers: int = int(os.getenv("WORKERS", 2))
+    # reload: bool = True # False in production This is for development only
 
 server_config = ServerConfig()
 auth_config = AuthConfig()
