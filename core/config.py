@@ -11,10 +11,14 @@ class AuthConfig:
 
 @dataclass
 class ServerConfig:
-    host: str = os.getenv("HOST")
-    port: int = int(os.getenv("PORT"))
-    workers: int = int(os.getenv("WORKERS", 2))
-    # reload: bool = True # False in production This is for development only
+    def __init__(self, mode: str = "PROD"):
+        self.host: str = os.getenv("HOST")
+        self.port: int = int(os.getenv("PORT"))
 
-server_config = ServerConfig()
+        if mode == "DEV":
+            self.reload = True
+        else:
+            self.workers: int = int(os.getenv("WORKERS", os.cpu_count() * 2 + 1))
+
+server_config = ServerConfig(os.getenv("MODE", "PROD"))
 auth_config = AuthConfig()

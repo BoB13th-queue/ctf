@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 import uvicorn
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -20,7 +21,7 @@ async def lifespan(app: FastAPI):
 
     with Session(engine) as db:
         if not user_crud.get_user_by_username(db, "admin"):
-            user_crud.register_admin(db, "admin", "0000", "Admin User")
+            user_crud.register_admin(db, os.getenv("ADMIN_USER"), os.getenv("ADMIN_PASS"), "Admin User")
     yield
 
 app = FastAPI(lifespan=lifespan)

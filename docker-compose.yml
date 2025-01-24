@@ -16,6 +16,8 @@ services:
       - HOST=${HOST}
       - PORT=${PORT}
       - WORKERS=${WORKERS}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASS=${ADMIN_PASS}
 
 networks:
   app-network:
